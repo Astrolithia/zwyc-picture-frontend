@@ -41,7 +41,6 @@
 
 <script setup lang="ts">
 import { reactive } from 'vue'
-import { useLoginUserStore } from '@/stores/useCounterStore.ts'
 import { message } from 'ant-design-vue'
 import router from '@/router'
 import { userRegisterUsingPost } from '@/api/userController.ts'
@@ -52,8 +51,6 @@ const formState = reactive<API.UserRegisterRequest>({
   userPassword: '',
   checkPassword: '',
 })
-
-const loginUserStore = useLoginUserStore()
 
 /**
  * 表单提交

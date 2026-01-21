@@ -6,15 +6,16 @@
 
 <script setup lang="ts">
 import BasicLayout from '@/layout/BasicLayout.vue'
-import { healthUsingGet } from '@/api/mainController.ts'
-import { useLoginUserStore } from '@/stores/useCounterStore.ts'
-
-const loginUserStore = useLoginUserStore()
-loginUserStore.fetchLoginUser()
-
-healthUsingGet().then((res) => {
-  console.log(res)
-})
+// import { healthUsingGet } from '@/api/mainController.ts'
+// import { useLoginUserStore } from '@/stores/useCounterStore.ts'
+//
+// 已经改为在权限校验文件中获取
+// const loginUserStore = useLoginUserStore()
+// loginUserStore.fetchLoginUser()
+//
+// healthUsingGet().then((res) => {
+//   console.log(res)
+// })
 </script>
 
 <style scoped></style>
