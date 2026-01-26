@@ -30,7 +30,7 @@
     </div>
     <!-- 图片列表 -->
     <a-list
-      :grid="{ gutter: 16, xs: 1, sm: 2, md: 4, lg: 4, xl: 6, xxl: 3 }"
+      :grid="{ gutter: 16, xs: 1, md: 2, xl: 4 }"
       :data-source="dataList"
       :pagination="pagination"
       :loading="loading"
