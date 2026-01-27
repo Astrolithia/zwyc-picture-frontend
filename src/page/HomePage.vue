@@ -42,8 +42,8 @@
             <template #cover>
               <img
                 alt="picture.name"
-                :src="picture.url"
-                style="height: 180px; object-fit: contain"
+                :src="picture.thumbnailUrl ?? picture.url"
+                style="height: 200px; object-fit: cover"
               />
             </template>
             <a-card-meta :title="picture.name">

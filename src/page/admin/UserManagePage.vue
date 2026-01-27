@@ -1,5 +1,6 @@
 <template>
   <div id="userManagePage">
+    <h2 style="margin-bottom: 16px">用户管理</h2>
     <a-form layout="inline" :model="searchParams" @finish="doSearch">
       <a-form-item label="账号">
         <a-input
