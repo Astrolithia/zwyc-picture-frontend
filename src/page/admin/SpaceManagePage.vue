@@ -1,20 +1,34 @@
 <template>
-  <div id="userManagePage">
-    <h2 style="margin-bottom: 16px">用户管理</h2>
+  <div id="spaceManagePage">
+    <div
+      style="
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 16px;
+      "
+    >
+      <h2>空间管理</h2>
+      <a-space>
+        <a-button type="primary" href="/add_space" target="_blank">+ 创建空间</a-button>
+      </a-space>
+    </div>
+    <!-- 搜索表单 -->
     <a-form layout="inline" :model="searchParams" @finish="doSearch">
-      <a-form-item label="账号">
-        <a-input
-          v-model:value="searchParams.userAccount"
-          placeholder="请输入账号"
-          allow-clear
-        ></a-input>
+      <a-form-item name="spaceName" label="空间名称">
+        <a-input v-model:value="searchParams.spaceName" placeholder="请输入空间名称" allow-clear />
       </a-form-item>
-      <a-form-item label="用户名">
-        <a-input
-          v-model:value="searchParams.userName"
-          placeholder="请输入用户名"
+      <a-form-item name="spaceLevel" label="空间级别">
+        <a-select
+          v-model:value="searchParams.spaceLevel"
+          style="min-width: 180px"
+          placeholder="请选择空间级别"
+          :options="SPACE_LEVEL_OPTIONS"
           allow-clear
-        ></a-input>
+        />
+      </a-form-item>
+      <a-form-item label="用户 Id">
+        <a-input v-model:value="searchParams.userId" placeholder="请输入用户 id" allow-clear />
       </a-form-item>
       <a-form-item>
         <a-button type="primary" html-type="submit">搜索</a-button>
@@ -38,22 +52,26 @@
       </template>
 
       <template #bodyCell="{ column, record }">
-        <template v-if="column.dataIndex === 'userAvatar'">
-          <a-image :src="record.userAvatar" :width="32" />
+        <template v-if="column.dataIndex === 'spaceLevel'">
+          <div>{{ SPACE_LEVEL_MAP[record.spaceLevel] }}</div>
         </template>
-        <template v-else-if="column.dataIndex === 'userRole'">
-          <div v-if="record.userRole === 'admin'">
-            <a-tag color="green">管理员</a-tag>
-          </div>
-          <div v-else>
-            <a-tag color="blue">普通用户</a-tag>
-          </div>
+        <template v-if="column.dataIndex === 'spaceUseInfo'">
+          <div>大小：{{ formatSize(record.totalSize) }} /{{ formatSize(record.maxSize) }}</div>
+          <div>数量：{{ record.totalCount }} / {{ record.maxCount }}</div>
         </template>
         <template v-else-if="column.dataIndex === 'createTime'">
           {{ dayjs(record.createTime).format('YYYY-MM-DD HH:mm:ss') }}
         </template>
+        <template v-else-if="column.dataIndex === 'editTime'">
+          {{ dayjs(record.editTime).format('YYYY-MM-DD HH:mm:ss') }}
+        </template>
         <template v-else-if="column.key === 'action'">
-          <a-button danger @click="doDelete(record.id)">删除</a-button>
+          <a-space wrap>
+            <a-button type="link" :href="`/add_space?id=${record.id}`" target="_blank">
+              编辑
+            </a-button>
+            <a-button danger @click="doDelete(record.id)">删除</a-button>
+          </a-space>
         </template>
       </template>
     </a-table>
@@ -62,37 +80,41 @@
 <script setup lang="ts">
 import { SmileOutlined, DownOutlined } from '@ant-design/icons-vue'
 import { computed, onMounted, reactive, ref } from 'vue'
-import { deleteUserUsingPost, listUserVoByPageUsingPost } from '@/api/userController.ts'
+import { deleteSpaceUsingPost, listSpaceByPageUsingPost } from '@/api/spaceController.ts'
 import { message } from 'ant-design-vue'
 import dayjs from 'dayjs'
+import { SPACE_LEVEL_MAP, SPACE_LEVEL_OPTIONS } from '@/constants/space.ts'
+import { formatSize } from '@/utils'
 const columns = [
   {
     title: 'id',
     dataIndex: 'id',
+    width: 80,
   },
   {
-    title: '账号',
-    dataIndex: 'userAccount',
+    title: '空间名称',
+    dataIndex: 'spaceName',
   },
   {
-    title: '用户名',
-    dataIndex: 'userName',
+    title: '空间级别',
+    dataIndex: 'spaceLevel',
   },
   {
-    title: '头像',
-    dataIndex: 'userAvatar',
+    title: '使用情况',
+    dataIndex: 'spaceUseInfo',
   },
   {
-    title: '简介',
-    dataIndex: 'userProfile',
-  },
-  {
-    title: '用户角色',
-    dataIndex: 'userRole',
+    title: '用户 id',
+    dataIndex: 'userId',
+    width: 80,
   },
   {
     title: '创建时间',
     dataIndex: 'createTime',
+  },
+  {
+    title: '编辑时间',
+    dataIndex: 'editTime',
   },
   {
     title: '操作',
@@ -101,20 +123,20 @@ const columns = [
 ]
 
 // 定义数据
-const dataList = ref<API.UserVO[]>([])
+const dataList = ref<API.Space[]>([])
 const total = ref(0)
 
 // 搜索条件
-const searchParams = reactive<API.UserQueryRequest>({
+const searchParams = reactive<API.SpaceQueryRequest>({
   current: 1,
   pageSize: 10,
   sortField: 'createTime',
-  sortOrder: 'ascend',
+  sortOrder: 'descend',
 })
 
 // 获取数据
 const fetchData = async () => {
-  const res = await listUserVoByPageUsingPost({
+  const res = await listSpaceByPageUsingPost({
     ...searchParams,
   })
   if (res.data.code === 0 && res.data.data) {
@@ -159,7 +181,7 @@ const doDelete = async (id: String) => {
   if (!id) {
     return
   }
-  const res = await deleteUserUsingPost({ id })
+  const res = await deleteSpaceUsingPost({ id })
   if (res.data.code === 0) {
     message.success('删除成功')
     // 刷新数据

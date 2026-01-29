@@ -8,6 +8,7 @@
         enter-button="搜索"
         size="large"
         @search="doSearch"
+        allow-clear
       />
     </div>
     <!-- 分类和标签筛选 -->
@@ -29,55 +30,29 @@
       </a-space>
     </div>
     <!-- 图片列表 -->
-    <a-list
-      :grid="{ gutter: 16, xs: 1, md: 2, xl: 4 }"
-      :data-source="dataList"
-      :pagination="pagination"
-      :loading="loading"
-    >
-      <template #renderItem="{ item: picture }">
-        <a-list-item style="padding: 0">
-          <!-- 单张图片 -->
-          <a-card hoverable style="width: 240px" @click="doClickPicture(picture)">
-            <template #cover>
-              <img
-                alt="picture.name"
-                :src="picture.thumbnailUrl ?? picture.url"
-                style="height: 200px; object-fit: cover"
-              />
-            </template>
-            <a-card-meta :title="picture.name">
-              <template #description>
-                <a-flex>
-                  <a-tag color="green">
-                    {{ picture.category ?? '默认' }}
-                  </a-tag>
-                  <a-tag v-for="tag in picture.tags" :key="tag">
-                    {{ tag }}
-                  </a-tag>
-                </a-flex>
-              </template>
-            </a-card-meta>
-          </a-card>
-        </a-list-item>
-      </template>
-    </a-list>
-    <!-- 图片列表  -->
+    <PictureList :dataList="dataList" :loading="loading" />
+    <a-pagination
+      style="text-align: right"
+      v-model:current="searchParams.current"
+      v-model:pageSize="searchParams.pageSize"
+      :total="total"
+      @change="onPageChange"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
 import { computed, onMounted, reactive, ref } from 'vue'
 import {
-  listPictureByPageUsingPost,
   listPictureTagCategoryUsingGet,
   listPictureVoByPageUsingPost,
 } from '@/api/pictureController.ts'
 import { message } from 'ant-design-vue'
 import { useRouter } from 'vue-router'
+import PictureList from '@/components/PictureList.vue'
 
 // 定义数据
-const dataList = ref<API.Picture[]>([])
+const dataList = ref<API.PictureVO[]>([])
 const total = ref(0)
 const loading = ref(true)
 
@@ -110,7 +85,7 @@ const fetchData = async () => {
     dataList.value = res.data.data.records ?? []
     total.value = res.data.data.total ?? 0
   } else {
-    message.error('获取数据失败, ' + res.data.message)
+    message.error('获取数据失败，' + res.data.message)
   }
   loading.value = false
 }
@@ -121,18 +96,11 @@ onMounted(() => {
 })
 
 // 分页参数
-const pagination = computed(() => {
-  return {
-    current: searchParams.current,
-    pageSize: searchParams.pageSize,
-    total: total.value,
-    onChange: (page: number, pageSize: number) => {
-      searchParams.current = page
-      searchParams.pageSize = pageSize
-      fetchData()
-    },
-  }
-})
+const onPageChange = (page: number, pageSize: number) => {
+  searchParams.current = page
+  searchParams.pageSize = pageSize
+  fetchData()
+}
 
 // 搜索
 const doSearch = async () => {
@@ -157,7 +125,7 @@ const getTagCategoryOptions = async () => {
     tagList.value = res.data.data.tagList ?? []
     categoryList.value = res.data.data.categoryList ?? []
   } else {
-    message.error('获取标签分类列表失败' + res.data.message)
+    message.error('获取标签分类列表失败，' + res.data.message)
   }
 }
 

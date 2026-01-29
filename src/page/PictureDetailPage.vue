@@ -98,10 +98,10 @@ const fetchPictureDetail = async () => {
     if (res.data.code === 0 && res.data.data) {
       picture.value = res.data.data
     } else {
-      message.error('获取图片详情失败' + res.data.message)
+      message.error('获取图片详情失败，' + res.data.message)
     }
   } catch (e: any) {
-    message.error('获取图片详情失败' + e.message)
+    message.error('获取图片详情失败，' + e.message)
   }
 }
 
@@ -112,8 +112,15 @@ onMounted(() => {
 const router = useRouter()
 
 // 编辑
-const doEdit = async () => {
-  router.push('/add_picture?id=' + picture.value.id)
+const doEdit = () => {
+  // 跳转时一定要携带 spaceId
+  router.push({
+    path: '/add_picture',
+    query: {
+      id: picture.value.id,
+      spaceId: picture.value.spaceId,
+    },
+  })
 }
 
 //  删除数据
@@ -139,5 +146,6 @@ const doDownload = () => {
 
 <style scoped>
 #pictureDetailPage {
+  margin-bottom: 16px;
 }
 </style>

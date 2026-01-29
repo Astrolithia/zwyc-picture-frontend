@@ -68,7 +68,7 @@ const handleSubmit = async (values: any) => {
       path: '/',
     })
   } else {
-    message.error('创建失败' + res.data.message)
+    message.error('创建失败，' + res.data.message)
   }
   loading.value = false
 }

@@ -10,10 +10,10 @@
     >
       <h2>图片管理</h2>
       <a-space>
-        <a-button type="primary" href="/add_picture" target="_blank">+ 创建图片</a-button>
-        <a-button type="primary" href="/add_picture/batch" target="_blank" ghost
-          >+ 批量创建图片</a-button
-        >
+        <a-button type="primary" href="/add_picture" target="_blank"> + 创建图片 </a-button>
+        <a-button type="primary" href="/add_picture/batch" target="_blank" ghost>
+          + 批量创建图片
+        </a-button>
       </a-space>
     </div>
     <a-form layout="inline" :model="searchParams" @finish="doSearch">
@@ -179,6 +179,11 @@ const columns = [
     width: 80,
   },
   {
+    title: '空间 id',
+    dataIndex: 'spaceId',
+    width: 80,
+  },
+  {
     title: '审核信息',
     dataIndex: 'reviewMessage',
   },
@@ -212,12 +217,13 @@ const searchParams = reactive<API.PictureQueryRequest>({
 const fetchData = async () => {
   const res = await listPictureByPageUsingPost({
     ...searchParams,
+    nullSpaceId: true,
   })
   if (res.data.code === 0 && res.data.data) {
     dataList.value = res.data.data.records ?? []
     total.value = res.data.data.total ?? 0
   } else {
-    message.error('获取数据失败, ' + res.data.message)
+    message.error('获取数据失败，' + res.data.message)
   }
 }
 
@@ -279,7 +285,7 @@ const handleReview = async (record: API.Picture, reviewStatus: number) => {
     // 重新获取列表数据
     fetchData()
   } else {
-    message.error('审核操作失败' + res.data.message)
+    message.error('审核操作失败，' + res.data.message)
   }
 }
 </script>
