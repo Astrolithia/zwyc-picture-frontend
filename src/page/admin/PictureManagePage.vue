@@ -178,11 +178,11 @@ const columns = [
     dataIndex: 'userId',
     width: 80,
   },
-  {
-    title: '空间 id',
-    dataIndex: 'spaceId',
-    width: 80,
-  },
+  // {
+  //   title: '空间 id',
+  //   dataIndex: 'spaceId',
+  //   width: 80,
+  // },
   {
     title: '审核信息',
     dataIndex: 'reviewMessage',
