@@ -36,6 +36,10 @@ function getBase64(img: Blob, callback: (base64Url: string) => void) {
   reader.readAsDataURL(img)
 }
 
+/**
+ * 上传图片
+ * @param file
+ */
 const handleUpload = async ({ file }: any) => {
   loading.value = true
   try {
