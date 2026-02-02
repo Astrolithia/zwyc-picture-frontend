@@ -26,6 +26,7 @@
       :spaceId="spaceId"
       :onSuccess="onCropSuccess"
     />
+    <ImageOutPainting ref="imageOutPaintingRef" :picture="picture" :spaceId="spaceId" />
     <!--  图片信息表单  -->
     <a-form
       v-if="picture"
@@ -85,6 +86,7 @@ import { useRoute, useRouter } from 'vue-router'
 import UrlPictureUpload from '@/components/UrlPictureUpload.vue'
 import ImageCropper from '@/components/ImageCropper.vue'
 import { EditOutlined } from '@ant-design/icons-vue'
+import ImageOutPainting from '@/components/ImageOutPainting.vue'
 
 const router = useRouter()
 const route = useRoute()
