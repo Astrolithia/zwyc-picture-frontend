@@ -51,7 +51,7 @@ const props = defineProps<Props>()
 const resultImageUrl = ref<string>()
 
 // 是否可见
-const visible = ref(true)
+const visible = ref(false)
 
 // 打开弹窗
 const openModal = () => {
