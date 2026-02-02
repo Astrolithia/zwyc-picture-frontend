@@ -7,6 +7,7 @@
         <a-button type="primary" :href="`/add_picture?spaceId=${id}`" target="_blank">
           + 创建图片
         </a-button>
+        <a-button :icon="h(EditOutlined)" target="_blank" @click="doBatchEdit"> 批量编辑 </a-button>
         <a-tooltip
           :title="`占用空间 ${formatSize(space.totalSize)} / ${formatSize(space.maxSize)}`"
         >
@@ -35,11 +36,17 @@
       :total="total"
       @change="onPageChange"
     />
+    <BatchEditPictureModal
+      ref="batchEditPictureModalRef"
+      :spaceId="id"
+      :pictureLst="dataList"
+      :onSuccess="onBatchEditPictureSucess"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, reactive } from 'vue'
+import { onMounted, ref, reactive, h } from 'vue'
 import { getSpaceVoByIdUsingGet } from '@/api/spaceController.ts'
 import { message } from 'ant-design-vue'
 import { useLoginUserStore } from '@/stores/useCounterStore.ts'
@@ -52,6 +59,8 @@ import PictureList from '@/components/PictureList.vue'
 import PictureSearchForm from '@/components/PictureSearchForm.vue'
 import { Color } from 'vue3-colorpicker/types/utils/color'
 import { ColorPicker } from 'vue3-colorpicker'
+import BatchEditPictureModal from '@/components/BatchEditPictureModal.vue'
+import { EditOutlined } from '@ant-design/icons-vue'
 
 interface Props {
   id: string | number
@@ -151,6 +160,21 @@ const onColorChange = async (color: string) => {
     message.error('获取数据失败，' + res.data.message)
   }
   loading.value = false
+}
+
+// ---- 批量编辑图片 -----
+const batchEditPictureModalRef = ref()
+
+// 批量编辑图片成功
+const onBatchEditPictureSucess = () => {
+  fetchData()
+}
+
+// 打开批量编辑图片弹窗
+const doBatchEdit = () => {
+  if (batchEditPictureModalRef.value) {
+    batchEditPictureModalRef.value.openModal()
+  }
 }
 </script>
 
