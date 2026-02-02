@@ -116,11 +116,13 @@ const startPolling = () => {
         if (taskResult.taskStatus === 'SUCCEEDED') {
           message.success('扩图任务执行成功')
           resultImageUrl.value = taskResult.outputImageUrl
+          // 清理轮询
+          clearPolling()
         } else if (taskResult.taskStatus === 'FAILED') {
           message.success('扩图任务执行失败')
+          // 清理轮询
+          clearPolling()
         }
-        // 清理轮询
-        clearPolling()
       }
     } catch (error) {
       console.error('扩图任务轮询失败，', error)
