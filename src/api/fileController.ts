@@ -6,7 +6,7 @@ import request from '@/request'
 export async function testUploadFileUsingPost(
   body: {},
   file?: File,
-  options?: { [key: string]: any },
+  options?: { [key: string]: any }
 ) {
   const formData = new FormData()
 
