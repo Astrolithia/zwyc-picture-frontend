@@ -29,6 +29,7 @@
       :imageUrl="picture?.url"
       :picture="picture"
       :spaceId="spaceId"
+      :space="space"
       :onSuccess="onCropSuccess"
     />
     <ImageOutPainting
@@ -85,7 +86,7 @@
 
 <script setup lang="ts">
 import PictureUpload from '@/components/PictureUpload.vue'
-import { computed, h, onMounted, reactive, ref } from 'vue'
+import { computed, h, onMounted, reactive, ref, watchEffect } from 'vue'
 import { message } from 'ant-design-vue'
 import {
   editPictureUsingPost,
@@ -97,6 +98,7 @@ import UrlPictureUpload from '@/components/UrlPictureUpload.vue'
 import ImageCropper from '@/components/ImageCropper.vue'
 import { EditOutlined, FullscreenOutlined } from '@ant-design/icons-vue'
 import ImageOutPainting from '@/components/ImageOutPainting.vue'
+import { getSpaceVoByIdUsingGet } from '@/api/spaceController.ts'
 
 const router = useRouter()
 const route = useRoute()
@@ -134,13 +136,13 @@ const handleSubmit = async (values: any) => {
   })
   // 操作成功
   if (res.data.code === 0 && res.data.data) {
-    message.success('创建成功')
+    message.success('操作成功')
     // 跳转到图片详情页
     router.push({
       path: `/picture/${pictureId}`,
     })
   } else {
-    message.error('创建失败，' + res.data.message)
+    message.error('操作失败，' + res.data.message)
   }
 }
 
@@ -225,6 +227,27 @@ const doImagePainting = async () => {
 const onImageOutPaintingSuccess = (newPicture: API.PictureVO) => {
   picture.value = newPicture
 }
+
+// 获取空间信息
+const space = ref<API.SpaceVO>()
+
+// 获取老数据
+const fetchSpace = async () => {
+  // 获取到id
+  const id = route.query?.id
+  if (spaceId.value) {
+    const res = await getSpaceVoByIdUsingGet({
+      id: spaceId.value,
+    })
+    if (res.data.code === 0 && res.data.data) {
+      space.value = res.data.data
+    }
+  }
+}
+
+watchEffect(() => {
+  fetchSpace()
+})
 </script>
 
 <style scoped>
